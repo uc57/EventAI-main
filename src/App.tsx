@@ -86,7 +86,7 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-full flex flex-col bg-[#f9f9fb] dark:bg-[#121316] text-neutral-800 dark:text-neutral-100 font-sans antialiased transition-colors duration-300">
+      <div className="h-full min-h-screen w-full flex-1 flex flex-col bg-[#f9f9fb] dark:bg-[#121316] text-neutral-800 dark:text-neutral-100 font-sans antialiased transition-colors duration-300">
         {/* Accessible Skip Link */}
         <a
           href="#main-content"
@@ -112,13 +112,13 @@ export default function App() {
         />
 
         {/* Master Workspace Container */}
-        <div className="flex-1 flex overflow-hidden relative">
+        <div className="flex-1 flex relative min-h-0">
           {/* Main Scrollable Content */}
           <main
             id="main-content"
             tabIndex={-1}
             aria-label="Event Planning Workspace"
-            className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 transition-all duration-300 focus:outline-none"
+            className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-6 space-y-6 transition-all duration-300 focus:outline-none"
           >
             <div className="max-w-[1720px] mx-auto space-y-6">
               {/* 1. Hero Banner & Quick Actions Ribbon */}

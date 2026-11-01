@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import compression from 'compression';
-import geminiRoutes from './routes/gemini.routes';
+import geminiRoutes from './routes/gemini.routes.ts';
 
 dotenv.config();
 

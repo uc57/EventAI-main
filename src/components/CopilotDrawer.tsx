@@ -138,7 +138,7 @@ export const CopilotDrawer: React.FC<CopilotDrawerProps> = ({
 
   return (
     <aside
-      className={`fixed lg:static top-0 right-0 h-full w-full sm:w-[420px] bg-white dark:bg-[#18191e] border-l border-neutral-200/80 dark:border-neutral-800 flex flex-col flex-shrink-0 z-50 lg:z-30 transition-all duration-300 shadow-2xl lg:shadow-none ${
+      className={`fixed lg:sticky top-0 lg:top-[61px] right-0 h-screen lg:h-[calc(100vh-61px)] w-full sm:w-[420px] bg-white dark:bg-[#18191e] border-l border-neutral-200/80 dark:border-neutral-800 flex flex-col flex-shrink-0 z-50 lg:z-30 transition-all duration-300 shadow-2xl lg:shadow-none ${
         isOpen ? 'translate-x-0' : 'translate-x-full lg:hidden'
       }`}
     >
