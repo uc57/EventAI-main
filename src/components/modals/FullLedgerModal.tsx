@@ -139,7 +139,9 @@ export const FullLedgerModal: React.FC<FullLedgerModalProps> = ({
           <div className="flex items-center gap-2 flex-1 max-w-sm">
             <div className="relative w-full">
               <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-neutral-400" />
+              <label htmlFor="ledger-search-input" className="sr-only">Filter items or vendors</label>
               <input
+                id="ledger-search-input"
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

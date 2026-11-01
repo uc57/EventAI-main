@@ -2,7 +2,9 @@ import { BudgetCategory, CocktailRecipe, Milestone } from '../types';
 
 /**
  * Rebalances budget allocations between two categories while preserving the overall budget cap.
+ * Algorithmic Complexity: O(n) where n is the number of categories.
  *
+ * @complexity O(n)
  * @param categories - The current list of budget categories.
  * @param fromCategoryName - The name of the category to deduct surplus from.
  * @param toCategoryName - The name of the category to credit funds to.
@@ -32,7 +34,9 @@ export function rebalanceBudget(
 
 /**
  * Calculates committed percentage and remaining safe harbor cushion.
+ * Algorithmic Complexity: O(1) constant time arithmetic.
  *
+ * @complexity O(1)
  * @param totalBudget - Total budget cap in dollars.
  * @param committedBudget - Total funds committed/paid in dollars.
  * @returns Calculated percentage allocated and safe harbor dollar cushion.
@@ -57,7 +61,9 @@ export function calculatePacing(
 
 /**
  * Scales a cocktail recipe's ingredient requirements based on guest headcount.
+ * Algorithmic Complexity: O(n) where n is the number of ingredients.
  *
+ * @complexity O(n)
  * @param recipe - The cocktail recipe specification.
  * @param guestCount - The confirmed number of guests.
  * @returns The scaled total cost and ingredient quantities.
@@ -90,7 +96,9 @@ export function scaleCocktailBatch(
 
 /**
  * Evaluates milestone prerequisite rules and determines locked/unlocked states.
+ * Algorithmic Complexity: O(n) single pass filter over milestones.
  *
+ * @complexity O(n)
  * @param milestones - List of all milestones.
  * @returns Processed list of milestones with updated blocked states.
  */

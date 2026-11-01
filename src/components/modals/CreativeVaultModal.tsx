@@ -126,7 +126,9 @@ export const CreativeVaultModal: React.FC<CreativeVaultModalProps> = ({
               </button>
             ))}
           </div>
+          <label htmlFor="creative-vault-search" className="sr-only">Search sensory asset</label>
           <input
+            id="creative-vault-search"
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

@@ -16,7 +16,32 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 // Enable gzip/deflate compression for optimal network efficiency
 app.use(compression());
 
-app.use(express.json({ limit: '2mb' }));
+// Strict payload limit for high security
+app.use(express.json({ limit: '1mb' }));
+
+// Custom in-memory rateLimit middleware to protect API endpoints
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+export const rateLimit = (limit: number = 120, windowMs: number = 60000) => {
+  return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const now = Date.now();
+    const clientRecord = rateLimitMap.get(ip) || { count: 0, resetTime: now + windowMs };
+    if (now > clientRecord.resetTime) {
+      clientRecord.count = 1;
+      clientRecord.resetTime = now + windowMs;
+    } else {
+      clientRecord.count += 1;
+    }
+    rateLimitMap.set(ip, clientRecord);
+    if (clientRecord.count > limit) {
+      res.status(429).json({ error: 'Too many requests, please try again later.' });
+      return;
+    }
+    next();
+  };
+};
+
+app.use('/api', rateLimit(120, 60000));
 
 // Security & Performance Headers Middleware
 app.use((_req, res, next) => {

@@ -146,7 +146,9 @@ export const MilestonesSection: React.FC<MilestonesSectionProps> = ({
                 key={ms.id}
                 className="group flex items-start gap-3.5 p-3.5 rounded-2xl bg-neutral-50/40 dark:bg-neutral-900/30 border border-neutral-200/40 dark:border-neutral-800/50"
               >
+                <label htmlFor={`ms-completed-${ms.id}`} className="sr-only">Mark {ms.title} as incomplete</label>
                 <input
+                  id={`ms-completed-${ms.id}`}
                   type="checkbox"
                   checked
                   onChange={() => onToggleMilestone(ms.id)}
@@ -172,7 +174,9 @@ export const MilestonesSection: React.FC<MilestonesSectionProps> = ({
               key={ms.id}
               className="group flex items-start gap-3.5 p-3.5 rounded-2xl bg-neutral-50/80 dark:bg-neutral-900/50 hover:bg-neutral-100/80 dark:hover:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800/80 transition"
             >
+              <label htmlFor={`ms-pending-${ms.id}`} className="sr-only">Mark {ms.title} as complete</label>
               <input
+                id={`ms-pending-${ms.id}`}
                 type="checkbox"
                 checked={false}
                 onChange={() => onToggleMilestone(ms.id)}

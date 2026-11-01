@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Calendar, MapPin, DollarSign, Wand2, Compass } from 'lucide-react';
 import { EventData } from '../../types';
 import { buildEventFromBlueprint } from '../../utils/blueprintBuilder';
+import { EventVerticalSelector } from '../forms/EventVerticalSelector';
 
 interface NewEventModalProps {
   isOpen: boolean;
@@ -40,13 +41,6 @@ export const NewEventModal: React.FC<NewEventModalProps> = ({
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      e.stopPropagation();
-      onClose();
-    }
-  };
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,7 +82,12 @@ export const NewEventModal: React.FC<NewEventModalProps> = ({
       aria-modal="true"
       aria-labelledby="new-event-title"
       tabIndex={-1}
-      onKeyDown={handleKeyDown}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') {
+          e.stopPropagation();
+          onClose();
+        }
+      }}
     >
       <div className="relative w-full max-w-xl bg-white dark:bg-[#1a1b20] rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-2xl p-6 space-y-5">
         {/* Header */}
@@ -116,39 +115,17 @@ export const NewEventModal: React.FC<NewEventModalProps> = ({
         </div>
 
         <form onSubmit={handleGenerate} className="space-y-4">
-          {/* Event Vertical Selector */}
-          <div>
-            <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">
-              Select Event Vertical *
-            </label>
-            <div className="grid grid-cols-4 gap-2 text-xs">
-              {[
-                { id: 'wedding', label: '💍 Wedding' },
-                { id: 'birthday', label: '🎂 Milestone B-day' },
-                { id: 'community', label: '🎪 Community Gala' },
-                { id: 'gala', label: '🥂 Fundraiser' },
-              ].map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setForm((prev) => ({ ...prev, eventType: t.id as EventData['type'] }))}
-                  className={`p-2.5 rounded-xl border text-center font-semibold transition ${
-                    form.eventType === t.id
-                      ? 'bg-brand-500 text-white border-brand-500 shadow-sm'
-                      : 'bg-neutral-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300'
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <EventVerticalSelector
+            selected={form.eventType}
+            onSelect={(t) => setForm((prev) => ({ ...prev, eventType: t }))}
+          />
 
           <div>
-            <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+            <label htmlFor="new-event-title-input" className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
               Event Title *
             </label>
             <input
+              id="new-event-title-input"
               type="text"
               required
               value={form.title}
@@ -160,12 +137,13 @@ export const NewEventModal: React.FC<NewEventModalProps> = ({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+              <label htmlFor="new-event-date-input" className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                 Target Date *
               </label>
               <div className="relative">
                 <Calendar className="w-3.5 h-3.5 absolute left-3 top-2.5 text-neutral-400" />
                 <input
+                  id="new-event-date-input"
                   type="date"
                   required
                   value={form.dateStr}
@@ -176,12 +154,13 @@ export const NewEventModal: React.FC<NewEventModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+              <label htmlFor="new-event-location-input" className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                 Location / City *
               </label>
               <div className="relative">
                 <MapPin className="w-3.5 h-3.5 absolute left-3 top-2.5 text-neutral-400" />
                 <input
+                  id="new-event-location-input"
                   type="text"
                   required
                   value={form.location}
@@ -195,10 +174,11 @@ export const NewEventModal: React.FC<NewEventModalProps> = ({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+              <label htmlFor="new-event-guest-slider" className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                 Guest Count: <span className="text-brand-600 dark:text-brand-400 font-bold">{form.guestCount}</span>
               </label>
               <input
+                id="new-event-guest-slider"
                 type="range"
                 min="20"
                 max="500"
@@ -210,12 +190,13 @@ export const NewEventModal: React.FC<NewEventModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+              <label htmlFor="new-event-budget-input" className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                 Total Budget: <span className="text-brand-600 dark:text-brand-400 font-bold">${form.budget.toLocaleString()}</span>
               </label>
               <div className="relative">
                 <DollarSign className="w-3.5 h-3.5 absolute left-3 top-2.5 text-neutral-400" />
                 <input
+                  id="new-event-budget-input"
                   type="number"
                   min="5000"
                   step="1000"
@@ -228,12 +209,13 @@ export const NewEventModal: React.FC<NewEventModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+            <label htmlFor="new-event-vibe-input" className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
               Aesthetic Vibe & Design Direction
             </label>
             <div className="relative">
               <Compass className="w-3.5 h-3.5 absolute left-3 top-2.5 text-neutral-400" />
               <input
+                id="new-event-vibe-input"
                 type="text"
                 value={form.vibe}
                 onChange={(e) => setForm((prev) => ({ ...prev, vibe: e.target.value }))}

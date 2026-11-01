@@ -3,6 +3,7 @@ import { X, Users, Plus, Search, Send } from 'lucide-react';
 import { Guest } from '../../types';
 import { INITIAL_GUESTS } from '../../data/mockGuests';
 import { GuestRow } from '../rsvp/GuestRow';
+import { AddGuestForm } from '../rsvp/AddGuestForm';
 
 interface RsvpManagerModalProps {
   isOpen: boolean;
@@ -22,15 +23,9 @@ export const RsvpManagerModal: React.FC<RsvpManagerModalProps> = ({
   onToast,
 }) => {
   const [guests, setGuests] = useState<Guest[]>(INITIAL_GUESTS);
-  const [uiState, setUiState] = useState({
-    filter: 'All' as 'All' | 'Confirmed' | 'Awaiting',
-    search: '',
-    isAdding: false,
-    name: '',
-    email: '',
-    partySize: 1,
-    dietary: '',
-  });
+  const [filter, setFilter] = useState<'All' | 'Confirmed' | 'Awaiting'>('All');
+  const [search, setSearch] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -47,8 +42,8 @@ export const RsvpManagerModal: React.FC<RsvpManagerModalProps> = ({
   if (!isOpen) return null;
 
   const filteredGuests = guests.filter((g) => {
-    const matchesFilter = uiState.filter === 'All' || g.status === uiState.filter;
-    const q = uiState.search.toLowerCase();
+    const matchesFilter = filter === 'All' || g.status === filter;
+    const q = search.toLowerCase();
     const matchesSearch =
       g.name.toLowerCase().includes(q) ||
       g.email.toLowerCase().includes(q) ||
@@ -56,32 +51,22 @@ export const RsvpManagerModal: React.FC<RsvpManagerModalProps> = ({
     return matchesFilter && matchesSearch;
   });
 
-  const handleAddGuest = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!uiState.name.trim()) return;
-
+  const handleAddGuest = (guestData: { name: string; email: string; partySize: number; dietary: string }) => {
     const newG: Guest = {
       id: `g-${Date.now()}`,
-      name: uiState.name.trim(),
-      email: uiState.email.trim() || 'guest@example.com',
+      name: guestData.name.trim(),
+      email: guestData.email.trim() || 'guest@example.com',
       status: 'Confirmed',
-      partySize: uiState.partySize,
-      dietaryRestrictions: uiState.dietary.trim() || 'Standard Menu',
+      partySize: guestData.partySize,
+      dietaryRestrictions: guestData.dietary.trim() || 'Standard Menu',
       table: 'Pending Table Assignment',
     };
 
     setGuests((prev) => [newG, ...prev]);
-    const updatedCount = guestCount + uiState.partySize;
+    const updatedCount = guestCount + guestData.partySize;
     onUpdateGuests(updatedCount);
-    onToast(`Added ${uiState.name} (${uiState.partySize} guest${uiState.partySize > 1 ? 's' : ''}) to RSVP list!`);
-    setUiState((prev) => ({
-      ...prev,
-      name: '',
-      email: '',
-      partySize: 1,
-      dietary: '',
-      isAdding: false,
-    }));
+    onToast(`Added ${guestData.name} (${guestData.partySize} guest${guestData.partySize > 1 ? 's' : ''}) to RSVP list!`);
+    setIsAdding(false);
   };
 
   const handleSendReminders = () => {
@@ -153,11 +138,13 @@ export const RsvpManagerModal: React.FC<RsvpManagerModalProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-1 max-w-xs">
             <div className="relative w-full">
+              <label htmlFor="rsvp-search-input" className="sr-only">Search guest name or dietary note</label>
               <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-neutral-400" />
               <input
+                id="rsvp-search-input"
                 type="text"
-                value={uiState.search}
-                onChange={(e) => setUiState((p) => ({ ...p, search: e.target.value }))}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search guest name or dietary note..."
                 className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white"
               />
@@ -169,9 +156,9 @@ export const RsvpManagerModal: React.FC<RsvpManagerModalProps> = ({
               {(['All', 'Confirmed', 'Awaiting'] as const).map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => setUiState((p) => ({ ...p, filter: tab }))}
+                  onClick={() => setFilter(tab)}
                   className={`px-3 py-1 rounded-lg font-medium transition ${
-                    uiState.filter === tab
+                    filter === tab
                       ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white font-semibold shadow-xs'
                       : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                   }`}
@@ -182,7 +169,7 @@ export const RsvpManagerModal: React.FC<RsvpManagerModalProps> = ({
             </div>
 
             <button
-              onClick={() => setUiState((p) => ({ ...p, isAdding: !p.isAdding }))}
+              onClick={() => setIsAdding(!isAdding)}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold shadow-xs transition"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -200,58 +187,11 @@ export const RsvpManagerModal: React.FC<RsvpManagerModalProps> = ({
         </div>
 
         {/* Add guest form drawer */}
-        {uiState.isAdding && (
-          <form onSubmit={handleAddGuest} className="p-3.5 rounded-2xl bg-brand-50/50 dark:bg-neutral-900 border border-brand-200/60 dark:border-neutral-800 space-y-3 animate-in fade-in">
-            <div className="font-semibold text-xs text-neutral-900 dark:text-white">Quick Add Confirmed Guest</div>
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
-              <input
-                type="text"
-                required
-                value={uiState.name}
-                onChange={(e) => setUiState((p) => ({ ...p, name: e.target.value }))}
-                placeholder="Full Name (e.g. David Sterling)"
-                className="px-3 py-1.5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white"
-              />
-              <input
-                type="email"
-                value={uiState.email}
-                onChange={(e) => setUiState((p) => ({ ...p, email: e.target.value }))}
-                placeholder="Email address"
-                className="px-3 py-1.5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white"
-              />
-              <input
-                type="number"
-                min={1}
-                max={10}
-                value={uiState.partySize}
-                onChange={(e) => setUiState((p) => ({ ...p, partySize: parseInt(e.target.value) || 1 }))}
-                placeholder="Party Size"
-                className="px-3 py-1.5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white"
-              />
-              <input
-                type="text"
-                value={uiState.dietary}
-                onChange={(e) => setUiState((p) => ({ ...p, dietary: e.target.value }))}
-                placeholder="Dietary requirements..."
-                className="px-3 py-1.5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white"
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setUiState((p) => ({ ...p, isAdding: false }))}
-                className="px-3 py-1 text-xs text-neutral-500 hover:text-neutral-700"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-1 text-xs font-semibold bg-brand-500 hover:bg-brand-600 text-white rounded-xl shadow-xs"
-              >
-                Save & Update Pacing
-              </button>
-            </div>
-          </form>
+        {isAdding && (
+          <AddGuestForm
+            onAddGuest={handleAddGuest}
+            onCancel={() => setIsAdding(false)}
+          />
         )}
 
         {/* Guest Table */}

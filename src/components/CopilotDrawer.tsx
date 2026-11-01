@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Zap, RotateCcw, X, Send } from 'lucide-react';
 import { CopilotMessageItem } from './copilot/CopilotMessageItem';
+import { CopilotQuickPrompts } from './copilot/CopilotQuickPrompts';
+import { DEFAULT_COPILOT_MESSAGES } from './copilot/copilotConstants';
 import { ChatMessage, EventData } from '../types';
 
 interface CopilotDrawerProps {
@@ -20,33 +22,7 @@ export const CopilotDrawer: React.FC<CopilotDrawerProps> = ({
   initialPrompt,
   onClearInitialPrompt,
 }) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 'msg-1',
-      sender: 'ai',
-      text: "Hello Elena & Marcus! I've loaded your vendor contracts, Napa climate forecasts, and live budget balances. How can I assist your planning right now?",
-      timestamp: '10:41 AM',
-    },
-    {
-      id: 'msg-2',
-      sender: 'user',
-      text: 'Can you draft a polite email to Sonoma Bloom asking if we can swap imported peonies for seasonal garden roses to stay within budget?',
-      timestamp: '10:42 AM',
-    },
-    {
-      id: 'msg-3',
-      sender: 'ai',
-      text: 'Here is a tailored negotiation draft that trims ~$750 by substituting greenhouse David Austin garden roses and blush ranunculus:',
-      timestamp: '10:43 AM',
-      draft: {
-        subject: 'Nuptials (Oct 18) — Floral Adjustments',
-        version: 'Draft v2',
-        body: '"Hi Camille & Sonoma Bloom team, Marcus and I adore your vision deck! As we finalize line allocations, we noticed imported peony surcharges. Could we substitute locally grown Juliet garden roses to keep our original threshold? Warm regards, Elena & Marcus"',
-        savings: 750,
-      },
-    },
-  ]);
-
+  const [messages, setMessages] = useState<ChatMessage[]>(DEFAULT_COPILOT_MESSAGES);
   const [inputVal, setInputVal] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copiedDraftId, setCopiedDraftId] = useState<string | null>(null);
@@ -102,14 +78,10 @@ export const CopilotDrawer: React.FC<CopilotDrawerProps> = ({
       });
 
       clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
       const data = await response.json();
       const aiTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
       const aiMsg: ChatMessage = {
         id: `ai-${Date.now()}`,
         sender: 'ai',
@@ -148,8 +120,7 @@ export const CopilotDrawer: React.FC<CopilotDrawerProps> = ({
   };
 
   const handleSendGmail = (subject: string, body: string) => {
-    const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailto;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     onToast('Draft dispatched to email client!');
   };
 
@@ -232,32 +203,7 @@ export const CopilotDrawer: React.FC<CopilotDrawerProps> = ({
       </div>
 
       {/* Quick Prompt Suggestion Chips */}
-      <div className="px-4 py-2 border-t border-neutral-200/60 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/30 overflow-x-auto whitespace-nowrap space-x-2">
-        <button
-          onClick={() => handleSendMessage('Draft a polite thank-you note to Meadowood venue team')}
-          className="px-2.5 py-1 rounded-full text-[11px] bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 hover:border-brand-500 text-neutral-700 dark:text-neutral-300 transition"
-        >
-          ✍️ Draft Venue Note
-        </button>
-        <button
-          onClick={() => handleSendMessage('What happens to our budget if RSVP headcount drops to 150?')}
-          className="px-2.5 py-1 rounded-full text-[11px] bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 hover:border-brand-500 text-neutral-700 dark:text-neutral-300 transition"
-        >
-          📉 Headcount Impact Analysis
-        </button>
-        <button
-          onClick={() => handleSendMessage('Suggest 3 practical rainy-day contingency layout ideas')}
-          className="px-2.5 py-1 rounded-full text-[11px] bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 hover:border-brand-500 text-neutral-700 dark:text-neutral-300 transition"
-        >
-          ☔ Rain Contingency Ideas
-        </button>
-        <button
-          onClick={() => handleSendMessage('Proactively suggest 3 cost-cutting DIY alternatives to save $1,500 without sacrificing quality')}
-          className="px-2.5 py-1 rounded-full text-[11px] bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 hover:border-brand-500 text-neutral-700 dark:text-neutral-300 transition"
-        >
-          💡 DIY Cost Cuts (-$1,500)
-        </button>
-      </div>
+      <CopilotQuickPrompts onSelectPrompt={handleSendMessage} />
 
       {/* Chat Input Field */}
       <div className="p-3 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#18191e]">
@@ -268,7 +214,9 @@ export const CopilotDrawer: React.FC<CopilotDrawerProps> = ({
             handleSendMessage(inputVal);
           }}
         >
+          <label htmlFor="copilot-drawer-input" className="sr-only">Instruct Copilot</label>
           <input
+            id="copilot-drawer-input"
             type="text"
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}

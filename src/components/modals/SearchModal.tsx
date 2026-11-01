@@ -53,7 +53,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         {/* Search Input bar */}
         <div className="relative flex items-center px-4 py-3.5 border-b border-neutral-200 dark:border-neutral-800">
           <Search className="w-5 h-5 text-neutral-400 mr-3" />
+          <label htmlFor="global-search-input" className="sr-only">Search budget tranches, vendor contracts, or ask AI</label>
           <input
+            id="global-search-input"
             autoFocus
             type="text"
             value={query}
