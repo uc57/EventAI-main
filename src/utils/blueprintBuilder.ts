@@ -3,6 +3,7 @@ import {
   GeneratedPlanCategory,
   GeneratedPlanMilestone,
   GeneratedPlanVendor,
+  VendorPartner,
 } from '../types';
 
 export interface BlueprintInput {
@@ -15,6 +16,10 @@ export interface BlueprintInput {
   vibe: string;
 }
 
+/**
+ * Constructs a normalized EventData blueprint from AI generated plan payloads.
+ * @complexity O(n) where n is the count of budget items and milestones.
+ */
 export function buildEventFromBlueprint(
   input: BlueprintInput,
   plan: {
@@ -97,7 +102,9 @@ export function buildEventFromBlueprint(
       name: v.name,
       category: v.category,
       role: v.category,
-      status: (v.status as any) || 'Proposed',
+      status: (v.status && ['Signed', 'Review', 'Deposit Paid', 'Proposed'].includes(v.status)
+        ? (v.status as VendorPartner['status'])
+        : 'Proposed'),
       totalContract: v.estimatedCost,
       paidAmount: 0,
       statusNote: v.action || 'Review quote',

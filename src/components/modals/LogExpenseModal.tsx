@@ -99,12 +99,13 @@ export const LogExpenseModal: React.FC<LogExpenseModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+            <label htmlFor="expense-name-input" className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
               Expense / Line Item Description *
             </label>
             <div className="relative">
               <Tag className="w-4 h-4 absolute left-3 top-3 text-neutral-400" />
               <input
+                id="expense-name-input"
                 type="text"
                 required
                 value={form.name}
@@ -117,12 +118,13 @@ export const LogExpenseModal: React.FC<LogExpenseModalProps> = ({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+              <label htmlFor="expense-amount-input" className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                 Amount ($ USD) *
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-xs text-neutral-400 font-bold">$</span>
                 <input
+                  id="expense-amount-input"
                   type="number"
                   step="any"
                   min="1"
@@ -136,10 +138,11 @@ export const LogExpenseModal: React.FC<LogExpenseModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+              <label htmlFor="expense-category-select" className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                 Budget Category *
               </label>
               <select
+                id="expense-category-select"
                 value={form.category}
                 onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
                 className="w-full px-3 py-2 text-xs rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 text-neutral-900 dark:text-white"
@@ -155,12 +158,13 @@ export const LogExpenseModal: React.FC<LogExpenseModalProps> = ({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+              <label htmlFor="expense-vendor-input" className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                 Vendor / Payee
               </label>
               <div className="relative">
                 <User className="w-4 h-4 absolute left-3 top-3 text-neutral-400" />
                 <input
+                  id="expense-vendor-input"
                   type="text"
                   value={form.vendorName}
                   onChange={(e) => setForm((p) => ({ ...p, vendorName: e.target.value }))}
@@ -171,10 +175,11 @@ export const LogExpenseModal: React.FC<LogExpenseModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+              <label htmlFor="expense-status-select" className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
                 Status
               </label>
               <select
+                id="expense-status-select"
                 value={form.status}
                 onChange={(e) => setForm((p) => ({ ...p, status: e.target.value as BudgetItem['status'] }))}
                 className="w-full px-3 py-2 text-xs rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 text-neutral-900 dark:text-white"
@@ -187,12 +192,13 @@ export const LogExpenseModal: React.FC<LogExpenseModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+            <label htmlFor="expense-notes-textarea" className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
               Audit Notes & Metadata
             </label>
             <div className="relative">
               <FileText className="w-4 h-4 absolute left-3 top-3 text-neutral-400" />
               <textarea
+                id="expense-notes-textarea"
                 rows={2}
                 value={form.notes}
                 onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}

@@ -46,6 +46,7 @@ app.use('/api', rateLimit(120, 60000));
 // Security & Performance Headers Middleware (configured for AI Studio iframe embedding)
 app.use((_req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');

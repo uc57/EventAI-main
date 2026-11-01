@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
-import { createCuratedBlueprint } from './gemini.blueprint.ts';
+import { createCuratedBlueprint } from '../services/gemini.blueprint.ts';
 
 dotenv.config();
 
@@ -35,8 +35,8 @@ export function sanitizeInput(input: unknown, maxLen = 3000): string {
   return input.trim().replace(/[<>]/g, '').slice(0, maxLen);
 }
 
-export { generateSmartFallback, type CopilotContext } from './gemini.fallback.ts';
-import { generateSmartFallback } from './gemini.fallback.ts';
+export { generateSmartFallback, type CopilotContext } from '../services/gemini.fallback.ts';
+import { generateSmartFallback } from '../services/gemini.fallback.ts';
 
 // 1. Copilot Chat Endpoint
 export const handleChat = async (req: Request, res: Response) => {
@@ -54,9 +54,9 @@ export const handleChat = async (req: Request, res: Response) => {
     if (client) {
       try {
         const prompt = `Current Event Context:
-Event: ${context?.name || 'Elena & Marcus Autumn Vineyard Nuptials'}
+Event: ${context?.name || 'Autumn Vineyard Nuptials'}
 Date: ${context?.date || 'October 18, 2025'}
-Location: ${context?.location || 'Meadowood Estate, St. Helena, Napa Valley'}
+Location: ${context?.location || 'Meadowood Estate, Napa Valley'}
 Guest Count: ${context?.guestsConfirmed || 168} confirmed of ${context?.guestCapacity || 180}
 Total Budget: $${context?.totalBudget?.toLocaleString() || '45,000'} (Committed: $${context?.committed?.toLocaleString() || '38,420'}, Buffer: $${context?.cushion?.toLocaleString() || '6,580'})
 Key Vendors: Sonoma Bloom (Florals, Review pending), Meadowood Estate (Signed), Wild Thyme Culinary (Tasting upcoming), Silverstone Visuals (Signed).
